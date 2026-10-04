@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find welcoming tennis clubs and communities across Vietnam.">
+  <title>Vietnam Tennis Directory</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Vietnam Tennis Directory home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>Vietnam Tennis<br><b>Directory</b></span>
+    </a>
+    <nav aria-label="Primary navigation"><a id="submit-link" href="#submit">Submit a club <span aria-hidden="true">↗</span></a></nav>
+    <a class="menu-link" href="#clubs">Clubs</a>
+  </header>
+
+  <main id="top">
+    <section class="finder" id="clubs" aria-labelledby="finder-title">
+      <div class="finder-heading">
+        <div><p class="eyebrow"><span></span> VIETNAM TENNIS DIRECTORY</p><h1 id="finder-title">Find a club.</h1></div>
+        <p id="data-status" class="data-status" aria-live="polite">Loading clubs…</p>
+      </div>
+      <div class="search-panel">
+        <label class="search-field" for="search-input">
+          <span class="sr-only">Search clubs</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m16 16 4.2 4.2"></path></svg>
+          <input id="search-input" type="search" placeholder="Search clubs, courts, cities…" autocomplete="off">
+        </label>
+        <div class="filter-row" aria-label="Filter clubs">
+          <label><span>Location</span><select id="city-filter"><option value="">All provinces & cities</option></select></label>
+          <label><span>District</span><select id="district-filter"><option value="">All districts</option></select></label>
+          <label><span>Recruiting</span><select id="status-filter"><option value="">Any status</option><option>Open</option><option>Seeking players</option><option>Waitlist</option></select></label>
+          <label><span>Playing level</span><select id="level-filter"><option value="">All levels</option><option>Beginner</option><option>Lower intermediate</option><option>Intermediate</option><option>Advanced</option><option>Competitive</option></select></label>
+          <button class="clear-button" id="clear-filters" type="button" hidden>Clear filters</button>
+        </div>
+      </div>
+      <div class="directory-meta">
+        <p id="result-count" aria-live="polite"></p>
+        <p>Updated clubs, all over Vietnam.</p>
+      </div>
+      <div id="club-grid" class="club-grid" aria-live="polite"></div>
+      <div id="empty-state" class="empty" hidden>
+        <span class="empty-icon" aria-hidden="true"></span>
+        <h3>No clubs match that search.</h3>
+        <p>Try a wider location, another level, or clear your filters.</p>
+        <button id="empty-clear" type="button">Clear all filters</button>
+      </div>
+    </section>
+
+    <section class="submit-section" id="submit">
+      <p>Run a club?</p><a class="submit-button" id="form-link" href="#" aria-disabled="true">Submit a club <span aria-hidden="true">↗</span></a><span class="form-note" id="form-note">Coming soon</span>
+    </section>
+  </main>
+
+  <footer><span>© <span id="year"></span> Vietnam Tennis Directory</span><span>Built for Vietnam’s tennis communities.</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
