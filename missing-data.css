@@ -1,0 +1,10 @@
+.is-missing {
+  color: #8a9d92;
+  font-style: italic;
+}
+
+.detail-empty {
+  margin: 22px 0 0;
+  color: #789083;
+  font-size: 13px;
+}
