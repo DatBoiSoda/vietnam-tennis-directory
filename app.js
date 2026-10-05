@@ -4,13 +4,14 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1a1Q6IptCoA
 
 // Add the Google Form URL here when it is ready. It is intentionally separate
 // from the public Sheet so private submitter details are never exposed.
-const GOOGLE_FORM_URL = '';
+const GOOGLE_FORM_URL = 'https://forms.gle/VZ3aoGMtfnmYLDv46';
 const LOCAL_FALLBACK_CSV = 'clubs.csv';
+const TEST_DATASET_CSV = 'test-clubs-missing-data.csv';
+const USE_TEST_DATASET = true;
 
 const grid = document.querySelector('#club-grid');
 const empty = document.querySelector('#empty-state');
 const resultCount = document.querySelector('#result-count');
-const dataStatus = document.querySelector('#data-status');
 const searchInput = document.querySelector('#search-input');
 const cityFilter = document.querySelector('#city-filter');
 const districtFilter = document.querySelector('#district-filter');
@@ -105,8 +106,8 @@ function currentClubs() {
 }
 function card(club) {
   const location = [club.venue, [club.district, club.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
-  const level = split(club.levels)[0] || 'Mọi trình độ';
-  return `<article class="club-card" data-club-id="${escapeHtml(club.id)}"><div class="card-top"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span><span class="court-mark" aria-hidden="true"></span></div><h3>${escapeHtml(club.name)}</h3><p class="location">${escapeHtml(location || 'Việt Nam')}</p><div class="card-footer"><span class="mini-tag">${escapeHtml(level)}</span><button class="view-detail" type="button" data-club-id="${escapeHtml(club.id)}">Xem chi tiết →</button></div></article>`;
+  const level = split(club.levels)[0];
+  return `<article class="club-card" data-club-id="${escapeHtml(club.id)}"><div class="card-top"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span><span class="court-mark" aria-hidden="true"></span></div><h3>${escapeHtml(club.name)}</h3><p class="location${location ? '' : ' is-missing'}">${escapeHtml(location || 'Địa điểm đang cập nhật')}</p><div class="card-footer">${level ? `<span class="mini-tag">${escapeHtml(level)}</span>` : '<span></span>'}<button class="view-detail" type="button" data-club-id="${escapeHtml(club.id)}">Xem chi tiết →</button></div></article>`;
 }
 function updateStats() {
   const total = document.querySelector('#total-clubs');
@@ -155,20 +156,25 @@ function showDetail(id) {
   ].filter(([, value]) => value);
   const contactUrl = safeUrl(club.contactUrl);
   const mapsUrl = safeUrl(club.mapsUrl);
-  detail.innerHTML = `<div class="detail-inner"><p class="detail-status"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span></p><h2 id="dialog-club-name">${escapeHtml(club.name)}</h2><p class="detail-place">${escapeHtml(place || 'Việt Nam')}</p>${club.description ? `<p class="detail-description">${escapeHtml(club.description)}</p>` : ''}${rows.length ? `<ul class="detail-list">${rows.map(([label, value]) => `<li><strong>${label}</strong><span>${escapeHtml(value)}</span></li>`).join('')}</ul>` : ''}<div class="detail-actions">${contactUrl ? `<a href="${escapeHtml(contactUrl)}" target="_blank" rel="noopener">Liên hệ qua ${escapeHtml(club.contactLabel)} ↗</a>` : ''}${mapsUrl ? `<a class="secondary" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Xem bản đồ ↗</a>` : ''}</div></div>`;
+  const missingContact = !contactUrl ? '<p class="detail-empty">Thông tin liên hệ đang cập nhật.</p>' : '';
+  detail.innerHTML = `<div class="detail-inner"><p class="detail-status"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span></p><h2 id="dialog-club-name">${escapeHtml(club.name)}</h2><p class="detail-place${place ? '' : ' is-missing'}">${escapeHtml(place || 'Địa điểm đang cập nhật')}</p>${club.description ? `<p class="detail-description">${escapeHtml(club.description)}</p>` : ''}${rows.length ? `<ul class="detail-list">${rows.map(([label, value]) => `<li><strong>${label}</strong><span>${escapeHtml(value)}</span></li>`).join('')}</ul>` : ''}${missingContact}<div class="detail-actions">${contactUrl ? `<a href="${escapeHtml(contactUrl)}" target="_blank" rel="noopener">Liên hệ qua ${escapeHtml(club.contactLabel)} ↗</a>` : ''}${mapsUrl ? `<a class="secondary" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Xem bản đồ ↗</a>` : ''}</div></div>`;
   dialog.showModal();
 }
 async function loadListings() {
+  if (USE_TEST_DATASET) {
+    const response = await fetch(TEST_DATASET_CSV);
+    clubs = usableClubs(parseCSV(await response.text()));
+    populateFilters(); updateStats(); render();
+    return;
+  }
   try {
     const response = await fetch(GOOGLE_SHEET_CSV_URL);
     if (!response.ok) throw new Error('Sheet not available');
     clubs = usableClubs(parseCSV(await response.text()));
     if (!clubs.length) throw new Error('No approved listings');
-    dataStatus.textContent = 'Dữ liệu câu lạc bộ đang hoạt động';
   } catch (error) {
     const response = await fetch(LOCAL_FALLBACK_CSV);
     clubs = usableClubs(parseCSV(await response.text()));
-    dataStatus.textContent = 'Bản xem trước';
   }
   populateFilters(); updateStats(); render();
 }
