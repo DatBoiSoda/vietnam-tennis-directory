@@ -7,7 +7,7 @@ const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/1a1Q6IptCoA
 const GOOGLE_FORM_URL = 'https://forms.gle/VZ3aoGMtfnmYLDv46';
 const LOCAL_FALLBACK_CSV = 'clubs.csv';
 const TEST_DATASET_CSV = 'test-clubs-missing-data.csv';
-const USE_TEST_DATASET = true;
+const USE_TEST_DATASET = false;
 
 const grid = document.querySelector('#club-grid');
 const empty = document.querySelector('#empty-state');
