@@ -1,65 +1,70 @@
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Find welcoming tennis clubs and communities across Vietnam.">
-  <title>Vietnam Tennis Directory</title>
+  <meta name="description" content="Tìm câu lạc bộ và cộng đồng tennis phù hợp trên khắp Việt Nam.">
+  <title>Danh bạ Tennis Việt Nam</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#top" aria-label="Vietnam Tennis Directory home">
+    <a class="brand" href="#top" aria-label="Trang chủ Danh bạ Tennis Việt Nam">
       <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span>Vietnam Tennis<br><b>Directory</b></span>
+      <span>Danh bạ<br><b>Tennis Việt Nam</b></span>
     </a>
-    <nav aria-label="Primary navigation"><a id="submit-link" href="#submit">Submit a club <span aria-hidden="true">↗</span></a></nav>
-    <a class="menu-link" href="#clubs">Clubs</a>
+    <nav aria-label="Điều hướng chính"><a id="submit-link" href="#submit">Đăng câu lạc bộ <span aria-hidden="true">↗</span></a></nav>
+    <a class="menu-link" href="#clubs">Tìm sân</a>
   </header>
 
   <main id="top">
     <section class="finder" id="clubs" aria-labelledby="finder-title">
       <div class="finder-heading">
-        <div><p class="eyebrow"><span></span> VIETNAM TENNIS DIRECTORY</p><h1 id="finder-title">Find a club.</h1></div>
-        <p id="data-status" class="data-status" aria-live="polite">Loading clubs…</p>
+        <div><p class="eyebrow"><span></span> DANH BẠ TENNIS VIỆT NAM</p><h1 id="finder-title">Tìm câu lạc bộ.</h1></div>
+        <p id="data-status" class="data-status" aria-live="polite">Đang tải danh sách…</p>
       </div>
       <div class="search-panel">
         <label class="search-field" for="search-input">
-          <span class="sr-only">Search clubs</span>
+          <span class="sr-only">Tìm câu lạc bộ</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m16 16 4.2 4.2"></path></svg>
-          <input id="search-input" type="search" placeholder="Search clubs, courts, cities…" autocomplete="off">
+          <input id="search-input" type="search" placeholder="Tìm theo tên, sân hoặc thành phố…" autocomplete="off">
         </label>
-        <div class="filter-row" aria-label="Filter clubs">
-          <label><span>Location</span><select id="city-filter"><option value="">All provinces & cities</option></select></label>
-          <label><span>District</span><select id="district-filter"><option value="">All districts</option></select></label>
-          <label><span>Recruiting</span><select id="status-filter"><option value="">Any status</option><option>Open</option><option>Seeking players</option><option>Waitlist</option></select></label>
-          <label><span>Playing level</span><select id="level-filter"><option value="">All levels</option><option>Beginner</option><option>Lower intermediate</option><option>Intermediate</option><option>Advanced</option><option>Competitive</option></select></label>
-          <button class="clear-button" id="clear-filters" type="button" hidden>Clear filters</button>
+        <div class="filter-row" aria-label="Lọc câu lạc bộ">
+          <label><span>Khu vực</span><select id="city-filter"><option value="">Tất cả tỉnh, thành</option></select></label>
+          <label><span>Quận / huyện</span><select id="district-filter"><option value="">Tất cả quận, huyện</option></select></label>
+          <label><span>Đang tuyển</span><select id="status-filter"><option value="">Tất cả trạng thái</option></select></label>
+          <label><span>Trình độ</span><select id="level-filter"><option value="">Tất cả trình độ</option></select></label>
+          <button class="clear-button" id="clear-filters" type="button" hidden>Xóa bộ lọc</button>
         </div>
       </div>
       <div class="directory-meta">
         <p id="result-count" aria-live="polite"></p>
-        <p>Updated clubs, all over Vietnam.</p>
+        <p>Chọn câu lạc bộ để xem chi tiết.</p>
       </div>
       <div id="club-grid" class="club-grid" aria-live="polite"></div>
       <div id="empty-state" class="empty" hidden>
         <span class="empty-icon" aria-hidden="true"></span>
-        <h3>No clubs match that search.</h3>
-        <p>Try a wider location, another level, or clear your filters.</p>
-        <button id="empty-clear" type="button">Clear all filters</button>
+        <h3>Chưa tìm thấy câu lạc bộ phù hợp.</h3>
+        <p>Thử chọn khu vực khác hoặc xóa bộ lọc.</p>
+        <button id="empty-clear" type="button">Xóa tất cả bộ lọc</button>
       </div>
     </section>
 
     <section class="submit-section" id="submit">
-      <p>Run a club?</p><a class="submit-button" id="form-link" href="#" aria-disabled="true">Submit a club <span aria-hidden="true">↗</span></a><span class="form-note" id="form-note">Coming soon</span>
+      <p>Bạn quản lý câu lạc bộ?</p><a class="submit-button" id="form-link" href="#" aria-disabled="true">Đăng câu lạc bộ <span aria-hidden="true">↗</span></a><span class="form-note" id="form-note">Sắp ra mắt</span>
     </section>
   </main>
 
-  <footer><span>© <span id="year"></span> Vietnam Tennis Directory</span><span>Built for Vietnam’s tennis communities.</span></footer>
+  <footer><span>© <span id="year"></span> Danh bạ Tennis Việt Nam</span><span>Kết nối cộng đồng tennis Việt Nam.</span></footer>
+
+  <dialog class="club-dialog" id="club-dialog" aria-labelledby="dialog-club-name">
+    <button class="dialog-close" type="button" aria-label="Đóng">×</button>
+    <div id="club-detail"></div>
+  </dialog>
   <script src="app.js"></script>
 </body>
 </html>
