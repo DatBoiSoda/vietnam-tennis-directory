@@ -17,6 +17,8 @@ const districtFilter = document.querySelector('#district-filter');
 const statusFilter = document.querySelector('#status-filter');
 const levelFilter = document.querySelector('#level-filter');
 const clearButton = document.querySelector('#clear-filters');
+const dialog = document.querySelector('#club-dialog');
+const detail = document.querySelector('#club-detail');
 let clubs = [];
 
 const split = value => String(value || '').split(/[|,]/).map(item => item.trim()).filter(Boolean);
@@ -85,10 +87,10 @@ function addOptions(select, values, placeholder) {
   select.value = values.includes(selected) ? selected : '';
 }
 function populateFilters() {
-  addOptions(cityFilter, unique(clubs.map(club => club.city)), 'All provinces & cities');
+  addOptions(cityFilter, unique(clubs.map(club => club.city)), 'Tất cả tỉnh, thành');
   const districtRows = cityFilter.value ? clubs.filter(club => club.city === cityFilter.value) : clubs;
-  addOptions(districtFilter, unique(districtRows.map(club => club.district)), 'All districts');
-  addOptions(statusFilter, unique(clubs.map(club => club.status)), 'Any status');
+  addOptions(districtFilter, unique(districtRows.map(club => club.district)), 'Tất cả quận, huyện');
+  addOptions(statusFilter, unique(clubs.map(club => club.status)), 'Tất cả trạng thái');
 }
 function currentClubs() {
   const search = searchInput.value.trim().toLowerCase();
@@ -102,11 +104,9 @@ function currentClubs() {
   });
 }
 function card(club) {
-  const tags = [...split(club.levels), ...split(club.times).map(time => `${time} play`)].slice(0, 4);
   const location = [club.venue, [club.district, club.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
-  const mapAction = club.mapsUrl ? `<a href="${escapeHtml(club.mapsUrl)}" target="_blank" rel="noopener">View map <span>↗</span></a>` : '';
-  const contactAction = club.contactUrl ? `<a class="contact" href="${escapeHtml(club.contactUrl)}" target="_blank" rel="noopener">${escapeHtml(club.contactLabel)} <span>↗</span></a>` : '';
-  return `<article class="club-card"><div class="card-top"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span><span class="court-mark" aria-hidden="true"></span></div><h3>${escapeHtml(club.name)}</h3><p class="location">${escapeHtml(location || 'Vietnam')}</p><p class="description">${escapeHtml(club.description || 'Contact this club for the latest playing information.')}</p><div class="chips">${tags.map(tag => `<span>${escapeHtml(tag)}</span>`).join('')}</div>${club.cost ? `<p class="cost">${escapeHtml(club.cost)}</p>` : ''}<div class="card-actions">${mapAction}${contactAction}</div></article>`;
+  const level = split(club.levels)[0] || 'Mọi trình độ';
+  return `<article class="club-card" data-club-id="${escapeHtml(club.id)}"><div class="card-top"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span><span class="court-mark" aria-hidden="true"></span></div><h3>${escapeHtml(club.name)}</h3><p class="location">${escapeHtml(location || 'Việt Nam')}</p><div class="card-footer"><span class="mini-tag">${escapeHtml(level)}</span><button class="view-detail" type="button" data-club-id="${escapeHtml(club.id)}">Xem chi tiết →</button></div></article>`;
 }
 function updateStats() {
   const total = document.querySelector('#total-clubs');
@@ -118,7 +118,7 @@ function updateStats() {
 }
 function render() {
   const visible = currentClubs();
-  resultCount.textContent = `${visible.length} ${visible.length === 1 ? 'club' : 'clubs'} ${visible.length === clubs.length ? 'in the directory' : 'match your search'}`;
+  resultCount.textContent = visible.length === clubs.length ? `${visible.length} câu lạc bộ` : `${visible.length} kết quả phù hợp`;
   grid.innerHTML = visible.map(card).join('');
   empty.hidden = visible.length > 0;
   const active = searchInput.value || cityFilter.value || districtFilter.value || statusFilter.value || levelFilter.value;
@@ -135,7 +135,28 @@ function setFormLinks() {
     const link = document.querySelector(`#${id}`);
     link.href = GOOGLE_FORM_URL; link.removeAttribute('aria-disabled');
   });
-  document.querySelector('#form-note').textContent = 'Every submission is reviewed before it goes live.';
+  document.querySelector('#form-note').textContent = 'Mỗi câu lạc bộ sẽ được duyệt trước khi hiển thị.';
+}
+function safeUrl(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^(https?:|mailto:|tel:)/i.test(raw)) return raw;
+  if (/^[+\d\s()-]{7,}$/.test(raw)) return `tel:${raw.replace(/[^+\d]/g, '')}`;
+  return `https://${raw}`;
+}
+function showDetail(id) {
+  const club = clubs.find(item => item.id === id);
+  if (!club) return;
+  const place = [club.venue, [club.district, club.city].filter(Boolean).join(', ')].filter(Boolean).join(' · ');
+  const rows = [
+    ['Trình độ', club.levels],
+    ['Khung giờ', club.times],
+    ['Chi phí', club.cost]
+  ].filter(([, value]) => value);
+  const contactUrl = safeUrl(club.contactUrl);
+  const mapsUrl = safeUrl(club.mapsUrl);
+  detail.innerHTML = `<div class="detail-inner"><p class="detail-status"><span class="status ${escapeHtml(club.status.toLowerCase().replace(/\s+/g, '-'))}">${escapeHtml(club.status)}</span></p><h2 id="dialog-club-name">${escapeHtml(club.name)}</h2><p class="detail-place">${escapeHtml(place || 'Việt Nam')}</p>${club.description ? `<p class="detail-description">${escapeHtml(club.description)}</p>` : ''}${rows.length ? `<ul class="detail-list">${rows.map(([label, value]) => `<li><strong>${label}</strong><span>${escapeHtml(value)}</span></li>`).join('')}</ul>` : ''}<div class="detail-actions">${contactUrl ? `<a href="${escapeHtml(contactUrl)}" target="_blank" rel="noopener">Liên hệ qua ${escapeHtml(club.contactLabel)} ↗</a>` : ''}${mapsUrl ? `<a class="secondary" href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener">Xem bản đồ ↗</a>` : ''}</div></div>`;
+  dialog.showModal();
 }
 async function loadListings() {
   try {
@@ -157,4 +178,12 @@ cityFilter.addEventListener('change', () => { populateFilters(); render(); });
 [districtFilter, statusFilter, levelFilter].forEach(filter => filter.addEventListener('change', render));
 clearButton.addEventListener('click', clearFilters);
 document.querySelector('#empty-clear').addEventListener('click', clearFilters);
+grid.addEventListener('click', event => {
+  const button = event.target.closest('.view-detail');
+  const cardElement = event.target.closest('.club-card');
+  if (button) showDetail(button.dataset.clubId);
+  else if (cardElement) showDetail(cardElement.dataset.clubId);
+});
+document.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
 setFormLinks(); loadListings();
