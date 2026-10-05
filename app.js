@@ -164,11 +164,11 @@ async function loadListings() {
     if (!response.ok) throw new Error('Sheet not available');
     clubs = usableClubs(parseCSV(await response.text()));
     if (!clubs.length) throw new Error('No approved listings');
-    dataStatus.textContent = 'Live from the club directory';
+    dataStatus.textContent = 'Dữ liệu câu lạc bộ đang hoạt động';
   } catch (error) {
     const response = await fetch(LOCAL_FALLBACK_CSV);
     clubs = usableClubs(parseCSV(await response.text()));
-    dataStatus.textContent = 'Directory preview';
+    dataStatus.textContent = 'Bản xem trước';
   }
   populateFilters(); updateStats(); render();
 }
